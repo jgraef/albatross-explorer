@@ -1,0 +1,14 @@
+
+.preformatted {
+    font-family: monospace;
+    white-space: pre;
+}
+
+.address-type {
+    font-size: smaller;
+}
+
+.macro-block-row {
+    font-size: large;
+    font-weight: bold;
+}

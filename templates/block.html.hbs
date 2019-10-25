@@ -1,0 +1,121 @@
+{{#> base title="Block" }}
+{{#*inline "content-block"}}
+
+<div class="container" style="margin-top: 1em;">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">
+                #{{content.block_number}}
+                {{#if content.is_macro}}
+                    Macro Block
+                {{else}}
+                    Micro Block
+                {{/if}}
+            </h4>
+            <p class="card-text"><span class="preformatted">{{content.block_hash}}</span></p>
+            <p class="card-text">{{content.timestamp}}</p>
+        </div>
+
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                Block number: <span class="preformatted">{{content.block_number}}</span>
+            </li>
+            <li class="list-group-item">
+                View number: <span class="preformatted">{{content.view_number}}</span>
+            </li>
+            <li class="list-group-item">
+                Epoch: <a class="preformatted" href="/epoch/{{content.epoch}}">{{content.epoch}}</a>
+            </li>
+            {{#if content.parent_hash}}
+                <li class="list-group-item">
+                    Parent hash: <span class="preformatted">{{content.parent_hash}}</span>
+                </li>
+            {{/if}}
+            {{#if content.parent_macro_hash}}
+                <li class="list-group-item">
+                    Parent macro hash: <span class="preformatted">{{content.parent_hash}}</span>
+                </li>
+            {{/if}}
+
+            <li class="list-group-item">
+                State root: <span class="preformatted">{{content.state_root}}</span>
+            </li>
+            <li class="list-group-item">
+                Extrinsics root: <span class="preformatted">{{content.extrinsics_root}}</span>
+            </li>
+            {{#if content.transaction_root}}
+            <li class="list-group-item">
+                Transaction root: <span class="preformatted">{{content.transaction_root}}</span>
+            </li>
+            {{/if}}
+
+            <li class="list-group-item">
+                Seed: <span class="preformatted">{{content.seed}}</span>
+            </li>
+        </ul>
+
+        <div class="card-footer">
+            {{#if content.parent_macro_hash}}
+                <a href="/block/{{content.parent_macro_hash}}" class="btn btn-primary"><i data-feather="chevrons-left"></i></a>
+            {{/if}}
+            {{#if content.parent_hash}}
+                <a href="/block/{{content.parent_hash}}" class="btn btn-primary"><i data-feather="chevron-left"></i></a>
+            {{/if}}
+
+            {{#if content.next_block_hash}}
+                <a href="/block/{{content.next_block_hash}}" class="btn btn-primary"><i data-feather="chevron-right"></i></a>
+            {{/if}}
+
+            <a href="/block/{{content.block_hash}}/download" class="btn btn-primary"><i data-feather="download">Download</i></a>
+        </div>
+    </div>
+
+    {{#unless content.is_macro}}
+    <div class="card" style="margin-top: 1em;">
+        <h4 class="card-header">Transactions</h4>
+        {{#if content.transactions}}
+            <table class="table card-body">
+                <thead>
+                <tr>
+                    <th>Hash</th>
+                    <th>Sender</th>
+                    <th>Redeiver</th>
+                    <th>Value</th>
+                    <th>Fee</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each content.transactions}}
+                <tr>
+                    <td>
+                        <a href="/block/{{this.txid}}">
+                            {{this.short_hash}}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="nimiq-address">{{this.sender_address}}</span>
+                        {{#if this.sender_type}}
+                            <span class="address-type">{{this.sender_type}}</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <span class="nimiq-address">{{this.recipient_address}}</span>
+                        {{#if this.recipient_type}}
+                        <span class="address-type">{{this.recipient_type}}</span>
+                        {{/if}}
+                    </td>
+                    <td>{{this.value}}</td>
+                    <td>{{this.fee}}</td>
+                </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        {{else}}
+            <div class="card-body">No transactions</div>
+        {{/if}}
+    </div>
+    {{/unless}}
+</div>
+
+{{/inline}}
+{{/base}}
