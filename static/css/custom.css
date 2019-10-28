@@ -12,3 +12,8 @@
     font-size: large;
     font-weight: bold;
 }
+
+.nimiq-address {
+    font-family: monospace;
+    font-size: smaller;
+}

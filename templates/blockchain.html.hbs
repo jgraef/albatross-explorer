@@ -1,0 +1,62 @@
+{{#> base title="Blockchain" }}
+{{#*inline "content-block"}}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Blockchain</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group mr-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                        <span data-feather="calendar"></span>
+                        This week
+                </button>
+        </div>
+</div>
+
+<div class="card">
+        <h4 class="card-header">Latest blocks</h4>
+        <table class="table card-body table-striped table-hover">
+                <thead>
+                <tr>
+                        <th>Block Number <small>(/view number)</small></th>
+                        <th>Hash</th>
+                        <th>Epoch</th>
+                        <th>Timestamp</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each content.latest_blocks}}
+                {{#if this.is_macro}}
+                <tr class="macro-block-row">
+                {{else}}
+                <tr>
+                {{/if}}
+                        <td>
+                                <a href="/block/{{this.block_hash}}">
+                                        #{{this.block_number}}<small>/{{this.view_number}}</small>
+                                </a>
+                        </td>
+                        <td>
+                                <a href="/block/{{this.block_hash}}">
+                                        <span style="preformatted">{{this.short_hash}}</span>
+                                </a>
+                        </td>
+                        <td>
+                                <a href="/epoch/{{this.epoch}}">
+                                        {{this.epoch}}
+                                </a>
+                        </td>
+                        <td>{{this.timestamp}}</td>
+                </tr>
+                {{/each}}
+                </tbody>
+        </table>
+        <div class="card-footer">
+                <a class="card-link" name="bottom" href="/?num_blocks={{content.more_blocks}}#bottom">more</a>
+        </div>
+</div>
+
+{{/inline}}
+{{/base}}

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use std::str::FromStr;
+use std::fmt::{Display, Error as DisplayError, Formatter};
 
 use rocket::request::FromParam;
 use rocket::http::RawStr;
@@ -9,9 +10,14 @@ use nimiq_primitives::networks::NetworkId;
 use nimiq_consensus::Consensus as _Consensus;
 use nimiq_consensus::AlbatrossConsensusProtocol;
 use nimiq_hash::Blake2bHash;
+use nimiq_keys::{Address, PublicKey};
+use nimiq_block_albatross::Block;
+use nimiq_blockchain_albatross::chain_info::ChainInfo;
 
-use crate::resources::genesis::GenesisInfo;
-use crate::resources::block::BlockInfo;
+use crate::resource::genesis::GenesisInfo;
+use crate::resource::block::BlockInfo;
+use crate::resource::transaction::TransactionInfo;
+use crate::resource::account::AccountInfo;
 
 
 // rename `Consensus` for us, since we only use Albatross and the Arc'd one
@@ -19,8 +25,8 @@ pub type Consensus = Arc<_Consensus<AlbatrossConsensusProtocol>>;
 
 
 #[derive(Clone, Debug, Fail)]
-pub enum BlockIdentifierParseError {
-    #[fail(display = "Block identifier unrecognized: {}", _0)]
+pub enum ParseError {
+    #[fail(display = "Unrecognized identifier format: {}", _0)]
     Unrecognized(String)
 }
 
@@ -32,7 +38,7 @@ pub enum BlockIdentifier {
 }
 
 impl FromStr for BlockIdentifier {
-    type Err = BlockIdentifierParseError;
+    type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.eq_ignore_ascii_case("genesis") {
@@ -45,18 +51,115 @@ impl FromStr for BlockIdentifier {
             Ok(BlockIdentifier::Number(num))
         }
         else {
-            Err(BlockIdentifierParseError::Unrecognized(s.to_string()))
+            Err(ParseError::Unrecognized(s.to_string()))
         }
     }
 }
 
 impl<'a> FromParam<'a> for BlockIdentifier {
-    type Error = BlockIdentifierParseError;
+    type Error = ParseError;
 
     fn from_param(param: &'a RawStr) -> Result<Self, Self::Error> {
         param.parse()
     }
 }
+
+impl Display for BlockIdentifier {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), DisplayError> {
+        match self {
+            BlockIdentifier::Genesis => "genesis".fmt(f),
+            BlockIdentifier::Number(block_number) => block_number.fmt(f),
+            BlockIdentifier::Hash(block_hash) => block_hash.fmt(f),
+        }
+    }
+}
+
+
+#[derive(Clone, Debug)]
+pub struct TransactionIdentifier(pub Blake2bHash);
+
+impl FromStr for TransactionIdentifier {
+    type Err = ParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        s.parse::<Blake2bHash>()
+            .map_err(|_| ParseError::Unrecognized(s.to_string()))
+            .map(|hash| TransactionIdentifier(hash))
+    }
+}
+
+impl<'a> FromParam<'a> for TransactionIdentifier {
+    type Error = ParseError;
+
+    fn from_param(param: &'a RawStr) -> Result<Self, Self::Error> {
+        param.parse()
+    }
+}
+
+impl Display for TransactionIdentifier {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), DisplayError> {
+        self.0.fmt(f)
+    }
+}
+
+
+#[derive(Clone, Debug)]
+pub enum AccountIdentifier {
+    Address(Address),
+    PublicKey(PublicKey),
+    Hash(Blake2bHash),
+}
+
+impl FromStr for AccountIdentifier {
+    type Err = ParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if let Ok(address) = s.parse() {
+            Ok(AccountIdentifier::Address(address))
+        }
+        else if let Ok(pubkey) = s.parse() {
+            Ok(AccountIdentifier::PublicKey(pubkey))
+        }
+        else if let Ok(hash) = s.parse() {
+            Ok(AccountIdentifier::Hash(hash))
+        }
+        else {
+            Err(ParseError::Unrecognized(s.to_string()))
+        }
+    }
+}
+
+impl<'a> FromParam<'a> for AccountIdentifier {
+    type Error = ParseError;
+
+    fn from_param(param: &'a RawStr) -> Result<Self, Self::Error> {
+        param.parse()
+    }
+}
+
+impl From<AccountIdentifier> for Address {
+    fn from(ident: AccountIdentifier) -> Self {
+        match ident {
+            AccountIdentifier::Address(address) => address,
+            AccountIdentifier::PublicKey(pubkey) => Address::from(&pubkey),
+            AccountIdentifier::Hash(hash) => Address::from(hash),
+        }
+    }
+}
+
+impl Display for AccountIdentifier {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), DisplayError> {
+        match self {
+            AccountIdentifier::Address(address) => address.fmt(f),
+            AccountIdentifier::PublicKey(pubkey) => pubkey.fmt(f),
+            AccountIdentifier::Hash(hash) => hash.fmt(f),
+        }
+    }
+}
+
+
+
+
 
 
 // Helper class bundling access to Albatross client and meta data store
@@ -81,15 +184,19 @@ impl Albatross {
     }
 
     pub fn get_block_info(&self, ident: &BlockIdentifier) -> Option<BlockInfo> {
+        self.get_chain_info(ident)
+            .map(BlockInfo::from)
+    }
+
+    pub fn get_chain_info(&self, ident: &BlockIdentifier) -> Option<ChainInfo> {
         let chain_store = &self.consensus.blockchain.chain_store;
-        let chain_info = match ident {
+        match ident {
             BlockIdentifier::Hash(hash) => chain_store.get_chain_info(&hash, true, None),
             BlockIdentifier::Number(number) => chain_store.get_chain_info_at(*number, true, None),
             BlockIdentifier::Genesis => {
                 chain_store.get_chain_info(&self.genesis_hash, true, None)
             },
-        }?;
-        Some(BlockInfo::from(chain_info))
+        }
     }
 
     pub fn get_latest_blocks(&self, num: usize) -> Result<Vec<BlockInfo>, ()>{
@@ -110,5 +217,25 @@ impl Albatross {
         }
 
         Ok(latest_blocks)
+    }
+
+    pub fn get_transaction_info(&self, ident: &TransactionIdentifier) -> Option<TransactionInfo> {
+        // TODO: We need to store block_hash and transaction indices for tx hashes.
+        // NOTE: The same transaction might appear in multiple blocks
+        let _hash = &ident.0;
+        None
+    }
+
+    pub fn get_account_info(&self, ident: &AccountIdentifier) -> Option<AccountInfo> {
+        unimplemented!()
+    }
+
+    pub fn get_head_hash(&self) -> Blake2bHash {
+        self.consensus.blockchain.head_hash()
+    }
+
+    pub fn get_head_info(&self) -> BlockInfo {
+        let ident = BlockIdentifier::Hash(self.get_head_hash());
+        self.get_block_info(&ident).expect("Expected block chain to have a head")
     }
 }

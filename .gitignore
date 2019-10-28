@@ -5,3 +5,5 @@
 /*.iml
 /db
 /peer_key.dat
+/.env
+/validator_key.dat

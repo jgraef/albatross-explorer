@@ -1,64 +1,52 @@
-{{#> base }}
-{{#*inline "title"}}
-        Dashboard
-{{/inline}}
-
+{{#> base title="Dashboard" }}
 {{#*inline "content-block"}}
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-                <div class="btn-group mr-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+<div class="container" style="margin-top: 1em;">
+        <div class="card">
+                <div class="card-header">
+                        <h4 class="card-title">
+                                Network
+                        </h4>
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                        <span data-feather="calendar"></span>
-                        This week
-                </button>
+
+                <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                                Connected peers: <span class="preformatted">{{content.num_peers}}</span>
+                        </li>
+                </ul>
+
+                <div class="card-footer">
+                        <a href="/block/{{content.block_hash}}" class="btn btn-primary">more</a>
+                </div>
         </div>
 </div>
 
-<div class="card">
-        <h4 class="card-header">Latest blocks</h4>
-        <table class="table card-body table-striped table-hover">
-                <thead>
-                <tr>
-                        <th>Block Number <small>(/view number)</small></th>
-                        <th>Hash</th>
-                        <th>Epoch</th>
-                        <th>Timestamp</th>
-                </tr>
-                </thead>
-                <tbody>
-                {{#each content.latest_blocks}}
-                {{#if this.is_macro}}
-                <tr class="macro-block-row">
-                {{else}}
-                <tr>
-                {{/if}}
-                        <td>
-                                <a href="/block/{{this.block_hash}}">
-                                        #{{this.block_number}}<small>/{{this.view_number}}</small>
-                                </a>
-                        </td>
-                        <td>
-                                <a href="/block/{{this.block_hash}}">
-                                        <span style="preformatted">{{this.short_hash}}</span>
-                                </a>
-                        </td>
-                        <td>
-                                <a href="/epoch/{{this.epoch}}">
-                                        {{this.epoch}}
-                                </a>
-                        </td>
-                        <td>{{this.timestamp}}</td>
-                </tr>
-                {{/each}}
-                </tbody>
-        </table>
-        <div class="card-footer">
-                <a class="card-link" href="/?num_blocks={{content.more_blocks}}">more</a>
+<div class="container" style="margin-top: 1em;">
+        <div class="card">
+                <div class="card-header">
+                        <h4 class="card-title">
+                                Blockchain Head
+                        </h4>
+                        <p class="card-text"><a class="preformatted" href="block/{{content.head.block_hash}}">{{content.head.block_hash}}</a></p>
+                </div>
+
+                <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                                Block number: <span>{{content.head.block_number}}</span>
+                        </li>
+                        <li class="list-group-item">
+                                View number: <span>{{content.head.view_number}}</span>
+                        </li>
+                        <li class="list-group-item">
+                                Epoch: <a href="/epoch/{{content.epoch}}">{{content.head.epoch}}</a>
+                        </li>
+                        <li class="list-group-item">
+                                Timestamp: <span>{{content.head.timestamp}}</span>
+                        </li>
+                        <li class="list-group-item">
+                                Seed: <span class="preformatted">{{content.head.seed}}</span>
+                        </li>
+                </ul>
         </div>
 </div>
 

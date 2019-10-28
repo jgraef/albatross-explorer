@@ -79,7 +79,7 @@
                 <tr>
                     <th>Hash</th>
                     <th>Sender</th>
-                    <th>Redeiver</th>
+                    <th>Receiver</th>
                     <th>Value</th>
                     <th>Fee</th>
                 </tr>
@@ -93,15 +93,15 @@
                         </a>
                     </td>
                     <td>
-                        <span class="nimiq-address">{{this.sender_address}}</span>
+                        <a class="nimiq-address" href="/account/{{this.sender_address}}">{{this.sender_address}}</a>
                         {{#if this.sender_type}}
-                            <span class="address-type">{{this.sender_type}}</span>
+                            <span class="address-type">({{this.sender_type}})</span>
                         {{/if}}
                     </td>
                     <td>
-                        <span class="nimiq-address">{{this.recipient_address}}</span>
+                        <a class="nimiq-address" href="/account/{{this.recipient_address}}">{{this.recipient_address}}</span>
                         {{#if this.recipient_type}}
-                        <span class="address-type">{{this.recipient_type}}</span>
+                        <span class="address-type">({{this.recipient_type}})</span>
                         {{/if}}
                     </td>
                     <td>{{this.value}}</td>
