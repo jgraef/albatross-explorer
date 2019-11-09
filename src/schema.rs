@@ -1,7 +1,7 @@
 table! {
-    address_aliases (id) {
+    account_aliases (id) {
         id -> Int4,
-        address -> Bytea,
+        address -> Bpchar,
         alias -> Text,
     }
 }
@@ -9,15 +9,16 @@ table! {
 table! {
     transactions (id) {
         id -> Int4,
-        txid -> Bytea,
-        block_hash -> Bytea,
+        txid -> Bpchar,
+        block_hash -> Bpchar,
+        block_number -> Int4,
         tx_idx -> Int4,
-        sender -> Bytea,
-        recipient -> Bytea,
+        sender -> Bpchar,
+        recipient -> Bpchar,
     }
 }
 
 allow_tables_to_appear_in_same_query!(
-    address_aliases,
+    account_aliases,
     transactions,
 );

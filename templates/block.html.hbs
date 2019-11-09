@@ -18,22 +18,22 @@
 
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                Block number: <span class="preformatted">{{content.block_number}}</span>
+                Block number: {{content.block_number}}
             </li>
             <li class="list-group-item">
-                View number: <span class="preformatted">{{content.view_number}}</span>
+                View number: {{content.view_number}}
             </li>
             <li class="list-group-item">
-                Epoch: <a class="preformatted" href="/epoch/{{content.epoch}}">{{content.epoch}}</a>
+                Epoch: <a href="/epoch/{{content.epoch}}">{{content.epoch}}</a>
             </li>
             {{#if content.parent_hash}}
                 <li class="list-group-item">
-                    Parent hash: <span class="preformatted">{{content.parent_hash}}</span>
+                    Parent hash: <a class="preformatted" href="/block/{{content.parent_hash}}">{{content.parent_hash}}</a>
                 </li>
             {{/if}}
             {{#if content.parent_macro_hash}}
                 <li class="list-group-item">
-                    Parent macro hash: <span class="preformatted">{{content.parent_hash}}</span>
+                    Parent macro hash: <a class="preformatted" href="/block/{{content.parent_macro_hash}}">{{content.parent_macro_hash}}</a>
                 </li>
             {{/if}}
 
@@ -77,6 +77,7 @@
             <table class="table card-body">
                 <thead>
                 <tr>
+                    <th>#</th>
                     <th>Hash</th>
                     <th>Sender</th>
                     <th>Receiver</th>
@@ -87,10 +88,9 @@
                 <tbody>
                 {{#each content.transactions}}
                 <tr>
+                    <td><a href="#tx-{{@index}}" name="tx-{{@index}}">#{{@index}}</a></td>
                     <td>
-                        <a href="/block/{{this.txid}}">
-                            {{this.short_hash}}
-                        </a>
+                        <a href="/transaction/{{this.txid}}" class="preformatted">{{this.short_txid}}</a>
                     </td>
                     <td>
                         <a class="nimiq-address" href="/account/{{this.sender_address}}">{{this.sender_address}}</a>
@@ -99,7 +99,7 @@
                         {{/if}}
                     </td>
                     <td>
-                        <a class="nimiq-address" href="/account/{{this.recipient_address}}">{{this.recipient_address}}</span>
+                        <a class="nimiq-address" href="/account/{{this.recipient_address}}">{{this.recipient_address}}</a>
                         {{#if this.recipient_type}}
                         <span class="address-type">({{this.recipient_type}})</span>
                         {{/if}}
@@ -111,7 +111,7 @@
                 </tbody>
             </table>
         {{else}}
-            <div class="card-body">No transactions</div>
+            <div class="card-body list-empty-text">No transactions</div>
         {{/if}}
     </div>
     {{/unless}}

@@ -1,0 +1,60 @@
+{{#> base title="Transaction" }}
+{{#*inline "content-block"}}
+
+<div class="container" style="margin-top: 1em;">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Transaction</h4>
+            <p class="card-text"><span class="preformatted">{{content.txid}}</span></p>
+            {{#if transaction.is_contract_creation}}
+                <p class="card-text transaction-flag">Contract Creation</p>
+            {{/if}}
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-text nim-amount">Balance: {{content.value}}</h5>
+        </div>
+
+        <ul class="list-group list-group-flush">
+            {{#if content.block_hash}}
+            <li class="list-group-item">
+                In block:
+                <a href="/block/{{content.block_hash}}#tx-{{content.block_tx_idx}}">
+                    <span class="preformatted">{{content.block_short_hash}}</span>
+                    #{{content.block_tx_idx}}
+                </a>
+                ({{content.confirmations}} confirmations)
+            </li>
+            {{/if}}
+
+            {{#if content.is_in_mempool}}
+            <li class="list-group-item">
+                In <a href="/mempool/#{{content.txid}}">mempool</a>
+            </li>
+            {{/if}}
+
+            <li class="list-group-item">
+                Sender:
+                <a class="nimiq-address" href="/account/{{content.sender_address}}">{{content.sender_address}}</a>
+                {{#if content.sender_type}}
+                <span class="address-type">({{content.sender_type}})</span>
+                {{/if}}
+            </li>
+
+            <li class="list-group-item">
+                Recipient:
+                <a class="nimiq-address" href="/account/{{content.sender_address}}">{{content.recipient_address}}</a>
+                {{#if content.recipient_type}}
+                <span class="address-type">({{content.recipient_type}})</span>
+                {{/if}}
+            </li>
+        </ul>
+
+        <div class="card-footer">
+            <a href="/transaction/{{content.txid}}/download" class="btn btn-primary"><i data-feather="download">Download</i></a>
+        </div>
+    </div>
+</div>
+
+{{/inline}}
+{{/base}}

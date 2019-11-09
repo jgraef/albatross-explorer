@@ -1,3 +1,5 @@
+cargo-features = ["profile-overrides"]
+
 [package]
 name = "albatross-explorer"
 version = "0.1.0"
@@ -14,22 +16,24 @@ keywords = ["nimiq", "cryptocurrency", "blockchain"]
 maintenance = { status = "experimental" }
 
 [dependencies]
-nimiq-lib = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-network-primitives = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-primitives = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-database = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-consensus = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-utils = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-hash = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-block-albatross = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-blockchain-albatross = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-network = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-bls = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-transaction = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-keys = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-account = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-nimiq-validator = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
-beserial = { git = "https://github.com/nimiq/core-rs.git", branch = "janosch/albatross-explorer" }
+nimiq-lib2 = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client", features = ["validator", "deadlock"] }
+nimiq-network-primitives = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-primitives = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-database = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-consensus = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-utils = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client", features = ["observer"] }
+nimiq-hash = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-block-albatross = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-blockchain-albatross = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-network = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-bls = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-transaction = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-keys = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-account = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-validator = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-macros = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+nimiq-collections = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
+beserial = { git = "https://github.com/nimiq/core-rs-albatross.git", branch = "janosch/new-client" }
 tokio = "0.1"
 futures = "0.1"
 log = "0.4"
@@ -42,7 +46,13 @@ failure = "0.1"
 hex = "0.4"
 chrono = "0.4"
 simple_logger = "1.3"
-diesel = { version = "1.0", features = ["postgres"] }
+diesel = { version = "1.0", features = ["postgres", "r2d2"] }
 dotenv = "0.15"
 rand = "0.4"
 rand04_compat = "0.1"
+parking_lot = "0.9"
+r2d2 = "0.8"
+
+[profile.dev.overrides.pairing]
+opt-level = 3
+debug = false

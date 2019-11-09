@@ -1,0 +1,151 @@
+{{#> base title="Account" }}
+{{#*inline "content-block"}}
+
+
+<div class="card" style="margin-top: 1em;">
+    <h4 class="card-header">
+        {{#if content.primary_alias}}
+            {{content.primary_alias}} &ndash;
+        {{/if}}
+        {{content.address}}
+    </h4>
+
+    <table class="table table-borderless card-body">
+        <tbody>
+            <tr>
+                <th class="w-25">Account Type</th>
+                <td>{{content.account_type}}</td>
+            </tr>
+            <tr>
+                <th>Balance</th>
+                <td class="nim-amount">{{content.account_data.balance}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="card" style="margin-top: 1em;">
+    <h4 class="card-header">Transactions</h4>
+    {{#if content.transactions}}
+    <table class="table card-body">
+        <thead>
+        <tr>
+            <th>Hash</th>
+            <th>Sender</th>
+            <th>Receiver</th>
+            <th>Value</th>
+            <th>Fee</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each content.transactions}}
+            <tr>
+                <td>
+                    <a href="/transaction/{{this.txid}}" class="preformatted">{{this.short_txid}}</a>
+                </td>
+                <td>
+                    <a class="nimiq-address {{#if this.is_sender}}font-weight-bold{{/if}}" href="/account/{{this.sender_address}}">{{this.sender_address}}</a>
+                    {{#if this.sender_type}}
+                    <span class="address-type">({{this.sender_type}})</span>
+                    {{/if}}
+                </td>
+                <td>
+                    <a class="nimiq-address {{#if this.is_recipient}}font-weight-bold{{/if}}" href="/account/{{this.recipient_address}}">{{this.recipient_address}}</a>
+                    {{#if this.recipient_type}}
+                    <span class="address-type">({{this.recipient_type}})</span>
+                    {{/if}}
+                </td>
+                <td class="nim-amount {{#if this.is_sender}}nimiq-value-spent{{/if}} {{#if this.is_recipient}}nimiq-value-received{{/if}}">
+                    {{this.value}}
+                </td>
+                <td class="nim-amount nimiq-fee">{{this.fee}}</td>
+            </tr>
+        {{/each}}
+        {{#if content.genesis_balance}}
+            <tr>
+                <td></td>
+                <td><a href="/genesis#account-{{content.address}}" class="font-italic">Genesis</a></td>
+                <td>
+                    <a class="nimiq-address {{#if this.is_recipient}}font-weight-bold{{/if}}" href="/account/{{content.address}}">{{content.address}}</a>
+                    {{#unless content.is_basic}}
+                        {{#if content.account_type}}
+                        <span class="address-type">({{content.account_type_special}})</span>
+                        {{/if}}
+                    {{/unless}}
+                </td>></td>
+            </tr>
+        {{/if}}
+        </tbody>
+    </table>
+    {{else}}
+        <div class="card-body">No transactions</div>
+    {{/if}}
+</div>
+
+{{#if content.is_staking}}
+<td class="nim-amount nimiq-value-received">
+    {{content.genesis_balance}}
+</td>
+<td
+    <div class="card" style="margin-top: 1em;">
+        <h4 class="card-header">Active Stakes</h4>
+        {{#if content.account_data.active_stake}}
+        <table class="table card-body">
+            <thead>
+            <tr>
+                <th>Validator</th>
+                <th>Staker</th>
+                <th>Reward</th>
+                <th>Balance</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each content.account_data.active_stake}}
+            <tr>
+                <td>
+                    <a href="/validator/{{this.validator_key}}">
+                        {{this.validator_key_short}}
+                    </a>
+                </td>
+                <td>
+                    <a class="nimiq-address" href="/account/{{this.staker_address}}">{{this.staker_address}}</a>
+                </td>
+                <td>
+                    <a class="nimiq-address" href="/account/{{this.reward_address}}">{{this.reward_address}}</a>
+                </td>
+                <td class="nim-amount">{{this.balance}}</td>
+            </tr>
+            {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <div class="card-body list-empty-text">No active stakes</div>
+        {{/if}}
+
+        <h4 class="card-header">Inactive Stakes</h4>
+        {{#if content.account_data.inactive_stake}}
+        <table class="table card-body">
+            <thead>
+            <tr>
+                <th>Retire Time</th>
+                <th>Balance</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each content.account_data.inactive_stake}}
+            <tr>
+                <td>{{this.retire_time}}</td>
+                <td class="nim-amount">{{this.balance}}</td>
+            </tr>
+            {{/each}}
+            </tbody>
+        </table>
+        {{else}}
+        <div class="card-body list-empty-text">No inactive stakes</div>
+        {{/if}}
+    </div>
+{{/if}}
+
+
+{{/inline}}
+{{/base}}

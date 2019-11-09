@@ -1,0 +1,53 @@
+{{#> base title="Accounts" }}
+{{#*inline "content-block"}}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Accounts</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group mr-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <span data-feather="calendar"></span>
+            This week
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <table class="table card-body table-striped table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address <span class="address-type">(type)</span></th>
+            <th>Balance</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each content}}
+            {{#unless this.is_empty}}
+                <tr>
+                    <td>
+                        {{#if this.primary_alias}}
+                            <a href="/account/{{this.address}}">{{this.primary_alias}}</a>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <a href="/account/{{this.address}}" class="nimiq-address">{{this.address}}</a>
+                        <span class="address-type">
+                            {{#unless this.is_basic}}
+                                ({{this.account_type}})
+                            {{/unless}}
+                        </span>
+                    </td>
+                    <td><span class="nim-amount">{{this.account_data.balance}}</span></td>
+                </tr>
+            {{/unless}}
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{/inline}}
+{{/base}}

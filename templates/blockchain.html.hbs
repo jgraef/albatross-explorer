@@ -24,6 +24,7 @@
                         <th>Hash</th>
                         <th>Epoch</th>
                         <th>Timestamp</th>
+                        <th>Transactions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -49,12 +50,15 @@
                                 </a>
                         </td>
                         <td>{{this.timestamp}}</td>
+                        <td>
+                                <a href="/block/{{this.block_hash}}#transactions">{{this.num_transactions}}</a>
+                        </td>
                 </tr>
                 {{/each}}
                 </tbody>
         </table>
         <div class="card-footer">
-                <a class="card-link" name="bottom" href="/?num_blocks={{content.more_blocks}}#bottom">more</a>
+                <a class="card-link" name="bottom" href="blockchain?num_blocks={{content.more_blocks}}#bottom">more</a>
         </div>
 </div>
 

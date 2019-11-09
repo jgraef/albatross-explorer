@@ -1,21 +1,29 @@
 use std::fmt::Display;
 
-use serde::Serializer;
+use serde::ser::{Serializer, SerializeSeq};
 use chrono::{DateTime, Utc};
 use chrono::offset::TimeZone;
 
 use nimiq_hash::Blake2bHash;
-use nimiq_primitives::coin::Coin;
 use nimiq_primitives::account::AccountType;
 use nimiq_keys::Address;
-use nimiq_primitives::networks::NetworkId;
-
+use nimiq_bls::bls12_381::CompressedPublicKey;
+use nimiq_collections::bitset::BitSet;
 
 
 pub(crate) fn serialize_with_hex<S>(data: &Vec<u8>, serializer: S) -> Result<S::Ok, S::Error>
     where S: Serializer,
 {
     serializer.serialize_str(&hex::encode(data))
+}
+
+pub(crate) fn serialize_with_hex_opt<S>(data_opt: &Option<Vec<u8>>, serializer: S) -> Result<S::Ok, S::Error>
+    where S: Serializer,
+{
+    match &data_opt {
+        Some(data) => serialize_with_hex(data, serializer),
+        None => serializer.serialize_none(),
+    }
 }
 
 pub(crate) fn serialize_with_beserial<T, S>(x: &T, serializer: S) -> Result<S::Ok, S::Error>
@@ -104,4 +112,27 @@ pub fn short_hash(hash: &Blake2bHash) -> String {
     let mut s = hash.to_hex();
     s.truncate(8);
     s
+}
+
+pub fn short_validator_key(key: &CompressedPublicKey) -> String {
+    let mut s = key.to_hex();
+    s.truncate(8);
+    s
+}
+
+pub(crate) fn serialize_datetime<S>(dt: &DateTime<Utc>, serializer: S) -> Result<S::Ok, S::Error>
+    where S: Serializer,
+{
+    let s = dt.format("%F %T").to_string();
+    serializer.serialize_str(&s)
+}
+
+pub(crate) fn serialize_bitset<S>(bitset: &BitSet, serializer: S) -> Result<S::Ok, S::Error>
+    where S: Serializer,
+{
+    let mut seq = serializer.serialize_seq(Some(bitset.len()))?;
+    for x in bitset.iter() {
+        seq.serialize_element(&x)?
+    }
+    seq.end()
 }

@@ -5,6 +5,7 @@
 }
 
 .address-type {
+    text-transform: lowercase; /* make sure it's always lower-case. I think the backend sends this non-uniformly */
     font-size: smaller;
 }
 
@@ -16,4 +17,28 @@
 .nimiq-address {
     font-family: monospace;
     font-size: smaller;
+}
+
+.nim-amount::after {
+    content: " NIM";
+}
+
+.list-empty-text {
+    font-style: italic;
+}
+
+.nimiq-value-spent {
+    color: red;
+}
+
+/*.nimiq-value-spent::before {
+    content: "-";
+}*/
+
+.nimiq-value-received {
+    color: green;
+}
+
+.transaction-flag {
+    font-style: italic;
 }

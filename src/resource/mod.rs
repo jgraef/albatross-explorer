@@ -9,4 +9,4 @@ pub mod renderer;
 pub mod metadata;
 pub mod account;
 
-pub use renderer::ResourceRenderer;
+pub use renderer::{ResourceRenderer, Download};

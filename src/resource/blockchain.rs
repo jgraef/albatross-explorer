@@ -21,7 +21,7 @@ pub struct BlockchainParams {
     num_blocks: Option<usize>,
 }
 
-#[get("/blockchain-info?<params..>")]
+#[get("/blockchain?<params..>")]
 pub fn get_blockchain(params: Form<BlockchainParams>, albatross: State<Albatross>, renderer: State<ResourceRenderer>) -> Result<Template, ()> {
     let num_blocks = params.num_blocks.unwrap_or(10);
     let latest_blocks = albatross.get_latest_blocks(num_blocks)?;

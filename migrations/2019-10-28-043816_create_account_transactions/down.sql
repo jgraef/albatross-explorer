@@ -1,2 +1,2 @@
 DROP TABLE transactions;
-DROP TABLE address_aliases;
+DROP TABLE account_aliases;
